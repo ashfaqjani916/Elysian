@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://meet.jit.si/external_api.js"></script>
+  <title>AR Model Upload</title>
+  <style>
+    /* Add your custom CSS styles here */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+    }
+
+    #container {
+      display: flex;
+      height: 100%;
+    }
+
+    #jitsi-meet-container {
+      width: 60%;
+      height: 100%;
+    }
+
+    #right-box {
+      width: 40%;
+      height: 100%;
+      background-color: #efefef;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    #chat-container {
+      flex-grow: 1;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 90px; /* Increased margin to provide space for the image */
+    }
+
+    #message-input {
+      padding: 10px;
+      border-top: 1px solid #ccc;
+    }
+
+    #image-container {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 10px;
+    }
+
+    #image-container img {
+      max-width: 100px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="jitsi-meet-container"></div>
+    <div id="right-box">
+      <div id="chat-container"></div>
+      <input id="message-input" type="text" placeholder="Type your message...">
+      <input id="name-input" type="text" placeholder="Your Name">
+    </div>
+  </div>
+  <div id="image-container">
+    <img src="photo1.jpg" alt="Your Image">
+  </div>
+
+  <script>
+    const options = {
+      roomName: 'YourRoomName',
+      width: '100%',
+      height: '100%',
+      parentNode: document.querySelector('#jitsi-meet-container'),
+    };
+    const api = new JitsiMeetExternalAPI('meet.jit.si', options);
+
+    // Array to store messages
+    let messages = [];
+
+    // Function to display messages
+    function displayMessages() {
+      const chatContainer = document.querySelector('#chat-container');
+      chatContainer.innerHTML = '';
+      messages.forEach(message => {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+
+        const senderElement = document.createElement('div');
+        senderElement.classList.add('sender');
+        senderElement.textContent = message.sender;
+
+        const contentElement = document.createElement('div');
+        contentElement.textContent = message.content;
+
+        messageElement.appendChild(senderElement);
+        messageElement.appendChild(contentElement);
+        chatContainer.appendChild(messageElement);
+      });
+    }
+
+    // Function to handle sending a message
+    function sendMessage() {
+      const messageInput = document.querySelector('#message-input');
+      const messageContent = messageInput.value;
+      if (messageContent) {
+        const nameInput = document.querySelector('#name-input');
+        const senderName = nameInput.value.trim();
+        if (senderName) {
+          const message = {
+            sender: senderName,
+            content: messageContent
+          };
+          messages.push(message);
+          displayMessages();
+          messageInput.value = '';
+        }
+      }
+    }
+
+    // Event listener for sending a message on Enter key press
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    // Event listener for sending a message on button click
+    const sendButton = document.querySelector('#send-button');
+    sendButton.addEventListener('click', sendMessage);
+  </script>
+</body>
+</html>
